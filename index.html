@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>올인원 중고거래 통합 검색 & 관리 대시보드</title>
+  <!-- Google Fonts: Outfit (영문/숫자용), Noto Sans KR (한글용) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Lucide Icons (CDN) -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div id="app" class="app-container">
+    
+    <!-- 1. 상단 헤더 네비게이션 -->
+    <header class="app-header">
+      <div class="header-inner">
+        <div class="logo-area">
+          <div class="logo-icon"><i data-lucide="layers"></i></div>
+          <h1 class="logo-text">DEAL<span>HUB</span></h1>
+        </div>
+        
+        <nav class="nav-tabs">
+          <button class="nav-tab-btn active" data-tab="search">
+            <i data-lucide="search"></i>
+            <span>매물 통합 검색</span>
+          </button>
+          <button class="nav-tab-btn" data-tab="trends">
+            <i data-lucide="trending-up"></i>
+            <span>시세 조회 차트</span>
+          </button>
+          <button class="nav-tab-btn" data-tab="manage">
+            <i data-lucide="layout-dashboard"></i>
+            <span>내 거래 관리</span>
+          </button>
+        </nav>
+        
+        <div class="user-profile">
+          <div class="profile-info">
+            <span class="profile-role">프로 개발자</span>
+            <span class="profile-name">young_dev</span>
+          </div>
+          <div class="avatar">Y</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- 2. 메인 콘텐츠 영역 -->
+    <main class="app-main">
+      
+      <!-- 2-A. 통합 검색 탭 -->
+      <section id="tab-search" class="tab-content active">
+        <!-- 상단 히어로 검색 바 -->
+        <div class="search-hero">
+          <h2 class="hero-title">파편화된 중고거래, 한눈에 검색하세요.</h2>
+          <p class="hero-subtitle">당근마켓, 번개장터, 중고나라의 매물을 실시간으로 통합 비교합니다.</p>
+          
+          <div class="search-bar-wrapper">
+            <i data-lucide="search" class="search-input-icon"></i>
+            <input type="text" id="search-input" placeholder="어떤 상품을 찾으시나요? (예: 아이폰 15, 에어포스, 맥북...)" autocomplete="off">
+            <button id="search-clear-btn" class="clear-btn" style="display: none;"><i data-lucide="x"></i></button>
+            <button id="search-submit-btn" class="search-btn">검색</button>
+          </div>
+          
+          <!-- 추천 검색어 -->
+          <div class="recommend-tags">
+            <span class="tag-label">추천 검색어:</span>
+            <button class="recommend-tag">아이폰 15</button>
+            <button class="recommend-tag">맥북 에어</button>
+            <button class="recommend-tag">나이키 에어포스</button>
+            <button class="recommend-tag">허먼밀러</button>
+            <button class="recommend-tag">슬램덩크</button>
+          </div>
+        </div>
+
+        <!-- 메인 필터 & 그리드 영역 -->
+        <div class="search-layout">
+          <!-- 좌측 필터 패널 -->
+          <aside class="filter-panel">
+            <div class="filter-header">
+              <h3 class="filter-title"><i data-lucide="sliders-horizontal"></i> 상세 필터</h3>
+              <button id="filter-reset-btn" class="reset-btn"><i data-lucide="rotate-ccw"></i> 초기화</button>
+            </div>
+            
+            <!-- 0. 지역 필터 -->
+            <div class="filter-section">
+              <h4 class="section-title">지역 검색</h4>
+              <div class="location-search-box" style="display:flex; align-items:center; border: 1px solid var(--border-color); border-radius: 6px; padding: 6px 10px; background: var(--white);">
+                <i data-lucide="map-pin" style="width: 16px; height: 16px; color: var(--text-muted); margin-right: 6px;"></i>
+                <input type="text" id="location-input" placeholder="동/구 이름 입력 (예: 강남구)" style="width:100%; font-size:13px; font-weight:500; border:none; outline:none; background: transparent;">
+              </div>
+            </div>
+            
+            <!-- 1. 플랫폼 필터 -->
+            <div class="filter-section">
+              <h4 class="section-title">플랫폼</h4>
+              <div class="checkbox-group">
+                <label class="custom-checkbox">
+                  <input type="checkbox" name="platform" value="carrot" checked>
+                  <span class="checkmark carrot"></span>
+                  <span class="label-text">당근마켓</span>
+                </label>
+                <label class="custom-checkbox">
+                  <input type="checkbox" name="platform" value="bunjang" checked>
+                  <span class="checkmark bunjang"></span>
+                  <span class="label-text">번개장터</span>
+                </label>
+                <label class="custom-checkbox">
+                  <input type="checkbox" name="platform" value="joonggonara" checked>
+                  <span class="checkmark joonggonara"></span>
+                  <span class="label-text">중고나라</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- 2. 가격 범위 필터 -->
+            <div class="filter-section">
+              <h4 class="section-title">가격대 범위</h4>
+              <div class="price-range-inputs">
+                <div class="price-input-box">
+                  <span class="price-currency">₩</span>
+                  <input type="number" id="price-min" placeholder="최소" min="0">
+                </div>
+                <span class="range-divider">~</span>
+                <div class="price-input-box">
+                  <span class="price-currency">₩</span>
+                  <input type="number" id="price-max" placeholder="최대" min="0">
+                </div>
+              </div>
+              <div class="range-presets">
+                <button class="preset-btn" data-min="0" data-max="100000">10만 이하</button>
+                <button class="preset-btn" data-min="100000" data-max="500000">10만 ~ 50만</button>
+                <button class="preset-btn" data-min="500000" data-max="1000000">50만 ~ 100만</button>
+              </div>
+            </div>
+
+            <!-- 3. 상품 상태 필터 -->
+            <div class="filter-section">
+              <h4 class="section-title">상품 상태</h4>
+              <div class="radio-group">
+                <label class="custom-radio">
+                  <input type="radio" name="condition" value="all" checked>
+                  <span class="radio-mark"></span>
+                  <span class="label-text">전체 상태</span>
+                </label>
+                <label class="custom-radio">
+                  <input type="radio" name="condition" value="S">
+                  <span class="radio-mark"></span>
+                  <span class="label-text">미개봉/S급</span>
+                </label>
+                <label class="custom-radio">
+                  <input type="radio" name="condition" value="A">
+                  <span class="radio-mark"></span>
+                  <span class="label-text">사용감 적음 (A급)</span>
+                </label>
+                <label class="custom-radio">
+                  <input type="radio" name="condition" value="B">
+                  <span class="radio-mark"></span>
+                  <span class="label-text">사용감 많음 (B급)</span>
+                </label>
+              </div>
+            </div>
+          </aside>
+
+          <!-- 우측 결과 그리드 -->
+          <div class="results-container">
+            <div class="results-meta">
+              <div class="results-count">검색 결과 <span id="search-total-count">0</span>개</div>
+              <div class="sort-selector">
+                <select id="sort-select">
+                  <option value="recent">최신순</option>
+                  <option value="price-asc">낮은 가격순</option>
+                  <option value="price-desc">높은 가격순</option>
+                  <option value="popular">인기순</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- 매물 카드 그리드 -->
+            <div id="product-grid" class="product-grid">
+              <!-- JS로 카드가 동적 생성됩니다. -->
+            </div>
+            
+            <!-- 결과 없음 상태 -->
+            <div id="no-results" class="no-results-state" style="display: none;">
+              <i data-lucide="search-code" class="no-results-icon"></i>
+              <h3>검색 조건에 맞는 매물이 없습니다.</h3>
+              <p>필터를 변경하거나 다른 검색어를 입력해 보세요.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2-B. 시세 추이 탭 -->
+      <section id="tab-trends" class="tab-content">
+        <div class="trends-container">
+          <div class="trends-header">
+            <div class="trends-title-area">
+              <h2><i data-lucide="trending-up" class="title-icon"></i> 실시간 시세 조회</h2>
+              <p>주요 인기 거래 품목의 30일 시세 및 가격 변동 추이를 분석합니다.</p>
+            </div>
+            
+            <!-- 품목 선택 탭버튼 -->
+            <div class="trend-item-selector">
+              <button class="trend-select-btn active" data-item="iphone">아이폰 15 프로</button>
+              <button class="trend-select-btn" data-item="macbook">맥북 에어 M3/M2</button>
+              <button class="trend-select-btn" data-item="airforce">나이키 에어포스 1</button>
+              <button class="trend-select-btn" data-item="hermanmiller">허먼밀러 에어론</button>
+              <button class="trend-select-btn" data-item="slamdunk">슬램덩크 전권세트</button>
+            </div>
+          </div>
+
+          <!-- 시세 대시보드 스태츠 카드 -->
+          <div class="trends-stats-grid">
+            <div class="trend-stat-card">
+              <span class="stat-label">최근 평균 시세</span>
+              <span class="stat-value" id="trend-avg-price">₩ 0</span>
+              <span class="stat-sub text-down" id="trend-price-diff"><i data-lucide="trending-down"></i> 전월 대비 2.4% 감소</span>
+            </div>
+            <div class="trend-stat-card">
+              <span class="stat-label">최저가 ~ 최고가 범위</span>
+              <span class="stat-value text-range" id="trend-price-range">₩ 0 ~ 0</span>
+              <span class="stat-sub">최근 30일 거래 데이터 기준</span>
+            </div>
+            <div class="trend-stat-card">
+              <span class="stat-label">총 시뮬레이션 거래량</span>
+              <span class="stat-value" id="trend-volume">0건</span>
+              <span class="stat-sub">당근/번개/중고나라 통합 수집</span>
+            </div>
+          </div>
+
+          <!-- 차트 시각화 카드 -->
+          <div class="chart-card">
+            <div class="chart-card-header">
+              <div class="chart-info">
+                <h3>30일 평균 거래 시세 변동</h3>
+                <span class="chart-unit">(단위: 원, 만 원 단위 절상)</span>
+              </div>
+              <div class="chart-legend">
+                <span class="legend-item"><span class="legend-color avg"></span>평균가 추이</span>
+              </div>
+            </div>
+            
+            <!-- SVG 차트 영역 -->
+            <div class="chart-wrapper">
+              <div id="svg-chart-container" class="svg-chart-container">
+                <!-- SVG 차트가 여기에 자바스크립트로 그려집니다 -->
+              </div>
+            </div>
+            
+            <div class="chart-footer">
+              <p><i data-lucide="info"></i> 차트 포인트에 마우스를 올리면 날짜별 상세한 평균 가격과 변동 거래량을 조회할 수 있습니다.</p>
+            </div>
+          </div>
+          
+          <!-- 분석 요약 카드 -->
+          <div class="trend-analysis-card">
+            <h3><i data-lucide="sparkles"></i> 딜허브 AI 시세 리포트</h3>
+            <div class="analysis-content">
+              <p id="trend-analysis-text">데이터를 불러오는 중입니다...</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2-C. 내 거래 관리 탭 -->
+      <section id="tab-manage" class="tab-content">
+        <div class="manage-container">
+          <div class="manage-header">
+            <div class="manage-title-area">
+              <h2><i data-lucide="layout-dashboard" class="title-icon"></i> 통합 판매/구매 관리</h2>
+              <p>내가 여러 플랫폼에 등록한 물건들과 구매한 내역의 거래 상태를 한곳에서 통합 모니터링합니다.</p>
+            </div>
+          </div>
+
+          <!-- 통계 카드 요약 -->
+          <div class="manage-summary-grid">
+            <div class="summary-card total">
+              <div class="card-icon"><i data-lucide="shopping-bag"></i></div>
+              <div class="card-info">
+                <span class="summary-label">전체 등록 물품</span>
+                <span class="summary-value" id="my-total-count">0건</span>
+              </div>
+            </div>
+            <div class="summary-card selling">
+              <div class="card-icon"><i data-lucide="play-circle"></i></div>
+              <div class="card-info">
+                <span class="summary-label">판매 중</span>
+                <span class="summary-value" id="my-selling-count">0건</span>
+              </div>
+            </div>
+            <div class="summary-card reserved">
+              <div class="card-icon"><i data-lucide="clock"></i></div>
+              <div class="card-info">
+                <span class="summary-label">예약 중</span>
+                <span class="summary-value" id="my-reserved-count">0건</span>
+              </div>
+            </div>
+            <div class="summary-card completed">
+              <div class="card-icon"><i data-lucide="check-circle2"></i></div>
+              <div class="card-info">
+                <span class="summary-label">거래 완료</span>
+                <span class="summary-value" id="my-completed-count">0건</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 거래 리스트 테이블 카드 -->
+          <div class="transaction-table-card">
+            <div class="table-header-tabs">
+              <div class="tab-selectors">
+                <button class="table-tab-btn active" data-type="all">전체 내역</button>
+                <button class="table-tab-btn" data-type="sell">판매 내역 (<span id="sell-tab-count">0</span>)</button>
+                <button class="table-tab-btn" data-type="buy">구매 내역 (<span id="buy-tab-count">0</span>)</button>
+              </div>
+              <div class="table-search">
+                <div class="table-search-box">
+                  <i data-lucide="search"></i>
+                  <input type="text" id="table-search-input" placeholder="내역 내 검색...">
+                </div>
+              </div>
+            </div>
+
+            <!-- 실제 거래 리스트 테이블 -->
+            <div class="table-wrapper">
+              <table class="transaction-table">
+                <thead>
+                  <tr>
+                    <th>플랫폼</th>
+                    <th>구분</th>
+                    <th>상품 정보</th>
+                    <th>카테고리</th>
+                    <th>거래 가격</th>
+                    <th>거래 대상</th>
+                    <th>진행 상태</th>
+                    <th>등록일</th>
+                  </tr>
+                </thead>
+                <tbody id="transaction-list">
+                  <!-- JS로 거래 행이 동적 생성됩니다. -->
+                </tbody>
+              </table>
+              
+              <!-- 내역 없음 -->
+              <div id="no-transactions" class="no-results-state" style="display: none; padding: 40px 0;">
+                <i data-lucide="folder-open" class="no-results-icon"></i>
+                <h3>등록된 거래 내역이 없습니다.</h3>
+                <p>거래 구분 필터를 조정해 보세요.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- 3. 푸터 -->
+    <footer class="app-footer">
+      <div class="footer-inner">
+        <p>© 2026 DEALHUB. All Rights Reserved. 개발자 기말 과제 포트폴리오용 통합 모니터링 시스템.</p>
+        <div class="footer-links">
+          <span>당근마켓</span> · <span>번개장터</span> · <span>중고나라</span>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- 매물 상세 모달 -->
+  <div id="product-modal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <button id="modal-close-btn" class="modal-close-btn"><i data-lucide="x"></i></button>
+      
+      <div class="modal-header">
+        <div class="modal-platform-badge" id="modal-platform">당근마켓</div>
+        <div class="modal-condition" id="modal-condition">S급</div>
+      </div>
+      
+      <div class="modal-body">
+        <div class="modal-main-info">
+          <div class="modal-thumbnail" id="modal-thumbnail-icon">
+            <i data-lucide="box"></i>
+          </div>
+          <div class="modal-text-info">
+            <h2 id="modal-title">매물 제목</h2>
+            <div class="modal-price" id="modal-price">100,000원</div>
+            <div class="modal-meta-row">
+              <span id="modal-category">카테고리</span> · <span id="modal-date">등록일</span> · <span id="modal-location">지역</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="modal-description-box">
+          <h3>상품 설명</h3>
+          <p id="modal-description">상품 설명 내용이 들어갑니다.</p>
+        </div>
+        
+        <div class="modal-seller-box">
+          <h3><i data-lucide="user"></i> 판매자 정보</h3>
+          <div class="seller-profile">
+            <div class="seller-avatar" id="modal-seller-avatar">👤</div>
+            <div class="seller-info">
+              <div class="seller-nickname" id="modal-seller-nickname">닉네임</div>
+              <div class="seller-rating" id="modal-seller-rating">매너온도 36.5도</div>
+            </div>
+            <button class="chat-btn">채팅하기</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 가상 채팅 모달 -->
+  <div id="chat-modal" class="modal-overlay hidden">
+    <div class="modal-content chat-content">
+      <div class="chat-header">
+        <button id="chat-close-btn" class="chat-back-btn"><i data-lucide="chevron-left"></i></button>
+        <div class="chat-header-info">
+          <h3 id="chat-seller-name">판매자 닉네임</h3>
+          <span id="chat-product-title">상품 제목</span>
+        </div>
+      </div>
+      
+      <div class="chat-message-area" id="chat-message-area">
+        <!-- 기본 시스템 안내 메시지 -->
+        <div class="chat-system-msg">
+          <span>채팅이 시작되었습니다. 판매자에게 인사해 보세요!</span>
+        </div>
+      </div>
+      
+      <div class="chat-input-area">
+        <input type="text" id="chat-input" placeholder="메시지 보내기..." autocomplete="off">
+        <button id="chat-send-btn" class="chat-send-btn"><i data-lucide="send"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lucide 아이콘 초기화 및 메인 JS 로드 -->
+  <script src="./data.js"></script>
+  <script src="./chart.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
